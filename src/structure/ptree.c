@@ -54,23 +54,23 @@ static ptree * __contain_ptree(ptree ** children , size_t nb_children, char c)
 
 void add_word(ptree * root, const char * s)
 {
-    if (*s == 0)
+    ptree * tmp = __contain_ptree(root->children, root->nb_children, *s);
+    if (!tmp)
+    {
+        tmp = create_ptree(*s);
+        __insert_ptree(root, tmp);
+
+        if (*(s+1) == 0)
+            tmp->is_word = 1;
+        else
+            add_word(tmp, s+1);
         return;
-    else if (*s != 0 && *(s+1) == 0)
-    {
-        root->is_word = 1;
-        root->c = *s;
     }
+
+    if (*(s+1) == 0)
+        tmp->is_word = 1;
     else
-    {
-        ptree * tmp = __contain_ptree(root->children, root->nb_children, *s);
-        if (tmp == NULL)
-        {
-            tmp = create_ptree(*s);
-            __insert_ptree(root, tmp);
-        }
         add_word(tmp, s+1);
-    }
 }
 
 static char ** __read_file(const char * filename, size_t * nb_strings)
@@ -83,7 +83,6 @@ static char ** __read_file(const char * filename, size_t * nb_strings)
     char ** content = malloc(0);
     size_t len;
     *nb_strings = 0;
-
 
     while (fscanf(f, "%s\n", s) != EOF)
     {
@@ -121,12 +120,14 @@ ptree * build_tree(const char * filename)
 
 // Display a prefix tree
 
-
 static void __display_tree(ptree * root, size_t depth)
 {
     for (size_t i = 0; i < depth; i++)
         printf(" ");
-    printf("|-%c\n",root->c);
+    if (root->is_word)
+        printf("-*%c\n", root->c);
+    else
+        printf("->%c\n",root->c);
     for (size_t i = 0; i < root->nb_children; i++)
         __display_tree(root->children[i], depth+1);
 }

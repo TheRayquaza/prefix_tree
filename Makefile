@@ -1,7 +1,7 @@
 # Makefile
 CC := gcc
 CFLAGS = -Wall -Wextra -Werror -std=c99 -O0 -g -fsanitize=address -static-libasan
-LDLIBS = -lm -lSDL2_image -fsanitize=address -static-libasan
+LDLIBS = -lm -fsanitize=address -static-libasan
 LDFLAGS =
 
 SOURCE := $(shell find src -type f -name "*.c")

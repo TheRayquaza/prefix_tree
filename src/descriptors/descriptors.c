@@ -59,25 +59,25 @@ static void __word_list(ptree * root, char *** list, size_t * nb_words,
 
     if (root->is_word)
     {
+        char ** copy = calloc(*nb_words+1, sizeof(char*));
+        for (size_t i = 0; i < *nb_words; i++)
+            copy[i] = (*list)[i];
         (*nb_words)++;
-        *list = realloc(*list, *nb_words * sizeof(char*));
-        (*list)[*nb_words-1] = s;
-        printf("%s\n", (*list)[*nb_words-1]);
+        free(*list);
+        copy[*nb_words-1] = s;
+        *list = copy;
     }
     for (size_t i = 0; i < root->nb_children; i++)
         __word_list(root->children[i], list, nb_words, s);
-
-    free(s);
+    if (!root->is_word)
+        free(s);
 }
 
-char ** word_list(ptree * root)
+char ** word_list(ptree * root, size_t * nb_words)
 {
     char ** list = malloc(0);
-    size_t nb_words = 0;
-    __word_list(root, &list, &nb_words, "");
-
-    list = realloc(list, (nb_words+1) * sizeof(char *));
-    list[nb_words] = NULL;
+    *nb_words = 0;
+    __word_list(root, &list, nb_words, "");
 
     return list;
 }
