@@ -33,16 +33,13 @@ char ** completion(ptree * root, const char * s, size_t * nb_words)
 
     if (valid_trie)
     {
-        char ** list = word_list(valid_trie, nb_words);
-        char * tmp;
+        char ** list = word_list(valid_trie, nb_words), * tmp;
+
         for (size_t i = 0; i < *nb_words; i++)
         {
-            tmp = calloc(strlen(list[i]) + strlen(s) + 1, sizeof(char));
-            
-            list[i] = realloc(list[i],
-                    (strlen(list[i]) + strlen(s) + 1) * sizeof(char));
-            for (size_t i = 0
-            sprintf(list[i], "%s%s", s, list[i]);
+            tmp = concat_str(s, list[i]+1);
+            free(list[i]);
+            list[i] = tmp;
         }
         return list;
     }
@@ -51,4 +48,14 @@ char ** completion(ptree * root, const char * s, size_t * nb_words)
         *nb_words = 0;
         return calloc(0, sizeof(char *));
     }
+}
+
+void display_completion(ptree * root, const char * s)
+{
+    size_t nb_words;
+    char ** completion_list = completion(root, s, &nb_words);
+    printf("\t-> Displaying all possibilities\n");
+    for (size_t i = 0; i < nb_words; i++)
+        printf("%lu) %s\n", i, completion_list[i]);
+    printf("\t-> Number of words %lu \n", nb_words);
 }

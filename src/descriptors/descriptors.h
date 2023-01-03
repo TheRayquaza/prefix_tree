@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../structure/ptree.h"
+#include "../basics/basics.h"
 #include <stdio.h>
 
 size_t count_words(ptree * root);

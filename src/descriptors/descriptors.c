@@ -54,21 +54,24 @@ double average_length(ptree * root)
 static void __word_list(ptree * root, char *** list, size_t * nb_words, 
         char * current)
 {
-    char * s = calloc(strlen(current)+2, sizeof(char));
-    sprintf(s, "%s%c", current, root->c);
+    char * s = append_new(current, root->c);
 
     if (root->is_word)
     {
         char ** copy = calloc(*nb_words+1, sizeof(char*));
+
         for (size_t i = 0; i < *nb_words; i++)
             copy[i] = (*list)[i];
+
         (*nb_words)++;
         free(*list);
         copy[*nb_words-1] = s;
         *list = copy;
     }
+
     for (size_t i = 0; i < root->nb_children; i++)
         __word_list(root->children[i], list, nb_words, s);
+
     if (!root->is_word)
         free(s);
 }
@@ -78,6 +81,8 @@ char ** word_list(ptree * root, size_t * nb_words)
     char ** list = malloc(0);
     *nb_words = 0;
     __word_list(root, &list, nb_words, "");
+    list = realloc(list, (*nb_words + 1) * sizeof(char*));
+    list[*nb_words] = NULL;
 
     return list;
 }
